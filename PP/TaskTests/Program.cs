@@ -18,9 +18,9 @@ namespace TaskTests
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            TaskTheme.RunSimpleTaskWithWait();
+            TaskTheme.ReturningValues();
 
-            Console.ReadLine();
+           // Console.ReadLine();
         }
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
