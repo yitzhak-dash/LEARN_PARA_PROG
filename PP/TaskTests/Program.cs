@@ -18,9 +18,16 @@ namespace TaskTests
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            TaskTheme.ReturningValues();
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
-           // Console.ReadLine();
+            TaskTheme.ContinuationsWithAwaiter();
+
+            Console.ReadLine();
+        }
+
+        static void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            Console.WriteLine(e.Exception.Message);
         }
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
