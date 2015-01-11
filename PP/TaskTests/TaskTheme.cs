@@ -67,23 +67,74 @@ namespace TaskTests
         {
             Task<int> primeNumberTask = Task.Run(() =>
             {
-                Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+                Console.WriteLine("Thread in the task: " + Thread.CurrentThread.ManagedThreadId);
                 return Enumerable.Range(2, 3000000).Count(n =>
                      Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0));
             });
 
-            var awaiter = primeNumberTask.ConfigureAwait(false).GetAwaiter();
-            //var awaiter = primeNumberTask.GetAwaiter();
-            Console.WriteLine("Task running...");
-            Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+            //var awaiter = primeNumberTask.ConfigureAwait(true).GetAwaiter();
+            var awaiter = primeNumberTask.GetAwaiter();
+            Console.WriteLine("Thread between " + Thread.CurrentThread.ManagedThreadId);
             awaiter.OnCompleted(() =>
             {
                 int result = awaiter.GetResult(); /* If the task faults, the exception is re-thrown when the continuation code calls 
                                                      awaiter.GetResult() */
-                Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+                Console.WriteLine("Thread in OnCompleted: " + Thread.CurrentThread.ManagedThreadId);
                 Console.WriteLine(result);
             });
         }
 
+        public static void ContinuationsWith_ContinueWith()
+        {
+            Task<int> primeNumberTask = Task.Factory.StartNew(() =>
+            {
+                Console.WriteLine("Thread in the task: " + Thread.CurrentThread.ManagedThreadId);
+                return Enumerable.Range(2, 3000000).Count(n =>
+                     Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0));
+            }/*,TaskCreationOptions.LongRunning*/); // run on non-pooled threads
+            Console.WriteLine("Thread between " + Thread.CurrentThread.ManagedThreadId);
+            primeNumberTask.ContinueWith(task =>
+            {
+                Console.WriteLine("Thread in OnCompleted: " + Thread.CurrentThread.ManagedThreadId);
+                Console.WriteLine(task.Result);
+            });
+
+            primeNumberTask.Wait();
+        }
+
+        public static void TaskCompletionSource_First()
+        {
+            var tcs = new TaskCompletionSource<int>();
+
+            new Thread(() => { Thread.Sleep(2000); tcs.SetResult(999); }).Start();
+
+            var tsk = tcs.Task;
+
+            Console.WriteLine(tsk.Result);
+        }
+
+        public static Task<TResult> Run<TResult>(Func<TResult> func)
+        {
+            var tcs = new TaskCompletionSource<TResult>();
+
+            new Thread(() =>
+             {
+                 try
+                 {
+                     tcs.SetResult(func());
+                 }
+                 catch (Exception exception)
+                 {
+                     tcs.SetException(exception);
+                 }
+             }).Start();
+
+            return tcs.Task;
+        }
+
+        public static void TaskDelay()
+        {
+            Task.Delay(2000).GetAwaiter().OnCompleted(() => Console.WriteLine("Koo-koo..."));
+        }
     }
 }

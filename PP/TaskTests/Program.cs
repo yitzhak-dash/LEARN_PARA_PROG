@@ -20,7 +20,7 @@ namespace TaskTests
 
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
-            TaskTheme.ContinuationsWithAwaiter();
+            PrinciplesOfAsynchrony.DisplayPrimeCounts();
 
             Console.ReadLine();
         }
