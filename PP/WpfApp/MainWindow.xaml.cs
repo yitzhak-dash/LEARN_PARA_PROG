@@ -27,13 +27,34 @@ namespace WpfApp
             InitializeComponent();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ContinuationsWith_ContinueWith();
-            ContinuationsWithAwaiter();
-            txtBlock.Text += await DoWork();
+            Go();
         }
 
+        private async void Go()
+        {
+            for (int i = 1; i < 5; i++)
+            {
+                btnClick.IsEnabled = false;
+                txtResults.Text += await GetPrimeCount(i * 1000000, 1000000) + " " + i + Environment.NewLine;
+                btnClick.IsEnabled = true;
+            }
+        }
+
+        private Task<int> GetPrimeCount(int start, int count)
+        {
+            return Task.Run(() =>
+                ParallelEnumerable.Range(start, count)
+                    .Count(n => Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0)));
+        }
+
+        private async Task<int> GetPrimeCount2(int start, int count)
+        {
+            return await Task.Run(() =>
+                ParallelEnumerable.Range(start, count)
+                    .Count(n => Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0)));
+        }
 
         public void ContinuationsWithAwaiter()
         {
@@ -49,17 +70,14 @@ namespace WpfApp
             {
                 int result = awaiter.GetResult(); /* If the task faults, the exception is re-thrown when the continuation code calls 
                                                      awaiter.GetResult() */
-                txtBlock.Text += " " + result.ToString();
+                txtResults.Text += " " + result.ToString();
             });
         }
 
         public void ContinuationsWith_ContinueWith()
         {
-            Task<int> primeNumberTask = Task.Factory.StartNew(() =>
-            {
-                return Enumerable.Range(2, 3000000).Count(n =>
-                     Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0));
-            }/*,TaskCreationOptions.LongRunning*/); // run on non-pooled threads
+            Task<int> primeNumberTask = Task.Factory.StartNew(() => ParallelEnumerable.Range(2, 3000000).Count(n =>
+                Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0)));
             primeNumberTask.ContinueWith(task =>
             {
                 TextBox.Text += " " + task.Result.ToString();

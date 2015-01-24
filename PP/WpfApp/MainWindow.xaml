@@ -8,8 +8,8 @@
             <Setter Property="Background" Value="Transparent"></Setter>
         </Style>
         <Style TargetType="TextBox">
-            <Setter Property="Foreground" Value="LightSlateGray"></Setter>
-            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="Background" Value="DimGray"></Setter>
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="LightSlateGray"></Setter>
@@ -17,10 +17,10 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <DockPanel>
-            <TextBlock x:Name="txtBlock" DockPanel.Dock="Top" Height="25"></TextBlock>
+        <StackPanel>
+            <TextBlock x:Name="txtResults" DockPanel.Dock="Top"></TextBlock>
             <TextBox x:Name="TextBox" DockPanel.Dock="Top" Height="25"></TextBox>
-            <Button Width="100" Height="25" DockPanel.Dock="Left" Click="Button_Click">click</Button>
-        </DockPanel>
+            <Button x:Name="btnClick" Width="100" Height="25" DockPanel.Dock="Left" Click="Button_Click">click</Button>
+        </StackPanel>
     </Grid>
 </Window>

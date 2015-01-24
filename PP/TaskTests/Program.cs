@@ -19,9 +19,10 @@ namespace TaskTests
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            //PrinciplesOfAsynchrony.CallTwoAwaits();
+            //PrinciplesOfAsynchrony.DisplayPrimeCountsAsync();
 
-            PrinciplesOfAsynchrony.DisplayPrimeCounts();
-
+        
             Console.ReadLine();
         }
 
